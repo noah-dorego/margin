@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getFeedSource, upsertFeedItem, updateFeedSourceCheckedAt } from '@/lib/db'
-import { extractArticleLinks, SCRAPER_USER_AGENT } from '@/lib/feed-scraper'
+import { extractArticleLinks, extractRssItems, SCRAPER_HEADERS } from '@/lib/feed-scraper'
 
 export async function POST(
   _req: NextRequest,
@@ -13,20 +13,39 @@ export async function POST(
     return NextResponse.json({ error: 'Feed source not found' }, { status: 404 })
   }
 
-  let html: string
+  let body: string
   try {
     const res = await fetch(source.url, {
-      headers: { 'User-Agent': SCRAPER_USER_AGENT },
+      headers: SCRAPER_HEADERS,
+      signal: AbortSignal.timeout(30_000),
     })
-    html = await res.text()
+
+    if (!res.ok) {
+      const msg = `[${source.label}] Server responded with HTTP ${res.status} ${res.statusText}`
+      console.error(msg)
+      return NextResponse.json({ error: msg }, { status: 502 })
+    }
+
+    body = await res.text()
   } catch (err) {
-    return NextResponse.json(
-      { error: `Failed to fetch source: ${err instanceof Error ? err.message : String(err)}` },
-      { status: 502 }
-    )
+    const isTimeout = err instanceof Error && err.name === 'TimeoutError'
+    const msg = isTimeout
+      ? `[${source.label}] Request timed out after 30s`
+      : `[${source.label}] Failed to fetch: ${err instanceof Error ? err.message : String(err)}`
+    console.error(msg)
+    return NextResponse.json({ error: msg }, { status: 502 })
   }
 
-  const links = extractArticleLinks(html, source.url)
+  let links: Array<{ url: string; title?: string; published_at?: string }>
+  try {
+    links = source.feed_type === 'rss'
+      ? await extractRssItems(body)
+      : extractArticleLinks(body, source.url)
+  } catch (err) {
+    const msg = `[${source.label}] Parse error: ${err instanceof Error ? err.message : String(err)}`
+    console.error(msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
+  }
 
   for (const link of links) {
     upsertFeedItem({ source_id: id, item_url: link.url, title: link.title, published_at: link.published_at })

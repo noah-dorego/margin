@@ -105,6 +105,7 @@ export interface FindingFilters {
 
 /** A configured regulatory agency publication page to monitor */
 export type FeedSourceCategory = 'news' | 'publications' | 'orders'
+export type FeedSourceType = 'html' | 'rss'
 
 export interface FeedSource {
   id: string
@@ -112,6 +113,8 @@ export interface FeedSource {
   url: string
   source_agency: SourceAgency
   category: FeedSourceCategory
+  feed_type: FeedSourceType
+  disabled: boolean
   last_checked_at?: string
   created_at: string
 }

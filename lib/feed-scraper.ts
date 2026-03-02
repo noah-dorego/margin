@@ -1,7 +1,16 @@
 import { parse, HTMLElement } from 'node-html-parser'
+import Parser from 'rss-parser'
 
-export const SCRAPER_USER_AGENT =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+const rssParser = new Parser()
+
+export const SCRAPER_HEADERS: Record<string, string> = {
+  'User-Agent':      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Accept':          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+  'Accept-Language': 'en-CA,en-US;q=0.9,en;q=0.8',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Cache-Control':   'no-cache',
+  'Pragma':          'no-cache',
+}
 
 // Per-source CSS selectors targeting article link <a> elements directly.
 const SOURCE_SELECTORS: Record<string, string> = {
@@ -41,6 +50,27 @@ function extractPublishedDate(a: HTMLElement): string | undefined {
     node = node.parentNode as HTMLElement | null
   }
   return undefined
+}
+
+export async function extractRssItems(
+  xml: string
+): Promise<Array<{ url: string; title?: string; published_at?: string }>> {
+  let feed: Awaited<ReturnType<typeof rssParser.parseString>>
+
+  try {
+    feed = await rssParser.parseString(xml)
+  } catch (err) {
+    throw new Error(`RSS parse failed: ${err instanceof Error ? err.message : String(err)}`)
+  }
+
+  return feed.items
+    .slice(0, 5)
+    .map(item => ({
+      url: item.link ?? item.guid ?? '',
+      title: item.title?.trim(),
+      published_at: item.isoDate ?? item.pubDate,
+    }))
+    .filter(item => item.url !== '')
 }
 
 export function extractArticleLinks(

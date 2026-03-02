@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Trash2, RefreshCw, Plus } from 'lucide-react'
+import { Trash2, RefreshCw, Plus, Rss, Globe } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import type { FeedSource, FeedSourceCategory, SourceAgency } from '@/lib/types'
+import type { FeedSource, FeedSourceCategory, FeedSourceType, SourceAgency } from '@/lib/types'
 
 const AGENCIES: SourceAgency[] = [
   'CRA', 'CIRO', 'OSC', 'CSA', 'FINTRAC', 'OSFI', 'FCAC', 'Dept-of-Finance', 'Payments-Canada',
@@ -30,6 +30,7 @@ export function FeedSourceList({ sources }: Props) {
   const [url, setUrl] = useState('')
   const [agency, setAgency] = useState<SourceAgency>('CRA')
   const [category, setCategory] = useState<FeedSourceCategory>('news')
+  const [feedType, setFeedType] = useState<FeedSourceType>('html')
   const [adding, setAdding] = useState(false)
 
   async function handleCheck(id: string) {
@@ -68,7 +69,7 @@ export function FeedSourceList({ sources }: Props) {
       const res = await fetch('/api/feed/sources', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ label, url, source_agency: agency, category }),
+        body: JSON.stringify({ label, url, source_agency: agency, category, feed_type: feedType }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Add failed')
@@ -77,6 +78,7 @@ export function FeedSourceList({ sources }: Props) {
       setUrl('')
       setAgency('CRA')
       setCategory('news')
+      setFeedType('html')
       setShowForm(false)
       router.refresh()
     } catch (err) {
@@ -135,10 +137,18 @@ export function FeedSourceList({ sources }: Props) {
               borderTop: i > 0 ? '1px solid var(--border-subtle)' : undefined,
             }}
           >
+            {/* Feed type icon */}
+            <span className="shrink-0" style={{ color: 'var(--text-muted)' }}>
+              {source.feed_type === 'rss'
+                ? <Rss size={13} />
+                : <Globe size={13} />
+              }
+            </span>
+
             {/* Label */}
             <span
               className="text-sm font-medium flex-1 min-w-0 truncate"
-              style={{ color: 'var(--text-primary)' }}
+              style={{ color: source.disabled ? 'var(--text-muted)' : 'var(--text-primary)' }}
             >
               {source.label}
             </span>
@@ -156,20 +166,22 @@ export function FeedSourceList({ sources }: Props) {
               className="text-xs shrink-0 w-28 text-right"
               style={{ color: 'var(--text-muted)' }}
             >
-              {source.last_checked_at ? formatDate(source.last_checked_at) : 'Never'}
+              {source.disabled ? 'Unavailable' : (source.last_checked_at ? formatDate(source.last_checked_at) : 'Never')}
             </span>
 
             {/* Actions */}
             <div className="flex items-center gap-1 shrink-0">
-              <button
-                onClick={() => handleCheck(source.id)}
-                disabled={checking === source.id}
-                className="flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors"
-                style={{ color: 'var(--text-secondary)', backgroundColor: 'var(--bg-surface)' }}
-              >
-                <RefreshCw size={11} className={checking === source.id ? 'animate-spin' : ''} />
-                Check
-              </button>
+              {!source.disabled && (
+                <button
+                  onClick={() => handleCheck(source.id)}
+                  disabled={checking === source.id}
+                  className="flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors"
+                  style={{ color: 'var(--text-secondary)', backgroundColor: 'var(--bg-surface)' }}
+                >
+                  <RefreshCw size={11} className={checking === source.id ? 'animate-spin' : ''} />
+                  Check
+                </button>
+              )}
               <button
                 onClick={() => handleDelete(source.id, source.label)}
                 className="p-1 rounded transition-colors"
@@ -220,6 +232,15 @@ export function FeedSourceList({ sources }: Props) {
               style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
             >
               {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+            </select>
+            <select
+              value={feedType}
+              onChange={e => setFeedType(e.target.value as FeedSourceType)}
+              className="rounded px-2 py-1.5 text-sm"
+              style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+            >
+              <option value="html">HTML</option>
+              <option value="rss">RSS</option>
             </select>
           </div>
           <input

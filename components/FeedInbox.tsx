@@ -4,9 +4,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { formatDate } from '@/lib/utils'
-import type { FeedItem, FeedSource } from '@/lib/types'
+import type { FeedItem, FeedSource, FeedSourceCategory } from '@/lib/types'
 
 const DEFAULT_VISIBLE = 5
+
+const CATEGORIES: { value: FeedSourceCategory; label: string }[] = [
+  { value: 'news',         label: 'News' },
+  { value: 'publications', label: 'Publications' },
+  { value: 'orders',       label: 'Orders' },
+]
 
 interface Props {
   items: FeedItem[]
@@ -118,34 +124,42 @@ function ItemRow({
 
 export function FeedInbox({ items, sources }: Props) {
   const router = useRouter()
+  const [activeCategory, setActiveCategory] = useState<FeedSourceCategory | null>(null)
   const [activeSourceIds, setActiveSourceIds] = useState<Set<string>>(new Set())
   const [showAll, setShowAll] = useState(false)
 
   const newItems = items.filter(i => i.status === 'new')
   const ingestedItems = items.filter(i => i.status === 'ingested')
 
-  // Filter by active sources
-  const filteredNew = activeSourceIds.size === 0
-    ? newItems
-    : newItems.filter(i => activeSourceIds.has(i.source_id))
+  // Filter by category and/or source
+  const filteredNew = newItems.filter(i => {
+    const source = sources.find(s => s.id === i.source_id)
+    if (activeCategory && source?.category !== activeCategory) return false
+    if (activeSourceIds.size > 0 && !activeSourceIds.has(i.source_id)) return false
+    return true
+  })
 
   const visibleNew = showAll ? filteredNew : filteredNew.slice(0, DEFAULT_VISIBLE)
   const hiddenCount = filteredNew.length - visibleNew.length
 
+  function toggleCategory(cat: FeedSourceCategory) {
+    setActiveCategory(prev => prev === cat ? null : cat)
+    setActiveSourceIds(new Set())
+    setShowAll(false)
+  }
+
   function toggleSource(id: string) {
     setActiveSourceIds(prev => {
       const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
     setShowAll(false)
   }
 
-  function clearFilter() {
+  function clearFilters() {
+    setActiveCategory(null)
     setActiveSourceIds(new Set())
     setShowAll(false)
   }
@@ -163,40 +177,58 @@ export function FeedInbox({ items, sources }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Source filter chips */}
+      {/* Filters */}
       {sources.length > 0 && (
-        <div
-          className="flex gap-1.5 pb-1"
-          style={{ overflowX: 'auto', whiteSpace: 'nowrap' }}
-        >
-          <button
-            onClick={clearFilter}
-            className="text-xs px-2.5 py-1 rounded-full font-medium shrink-0 transition-colors border"
-            style={{
-              borderColor: activeSourceIds.size === 0 ? 'var(--accent-blue)' : 'var(--border-subtle)',
-              backgroundColor: activeSourceIds.size === 0 ? 'color-mix(in srgb, var(--accent-blue) 12%, transparent)' : 'var(--bg-elevated)',
-              color: activeSourceIds.size === 0 ? 'var(--accent-blue)' : 'var(--text-secondary)',
-            }}
-          >
-            All
-          </button>
-          {sources.map(source => {
-            const isActive = activeSourceIds.has(source.id)
-            return (
+        <div className="flex flex-col gap-1.5">
+          {/* Category chips */}
+          <div className="flex gap-1.5" style={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+            <button
+              onClick={clearFilters}
+              className="text-xs px-2.5 py-1 rounded-full shrink-0 transition-colors border"
+              style={{
+                borderColor: !activeCategory && activeSourceIds.size === 0 ? 'var(--accent-blue)' : 'var(--border-subtle)',
+                backgroundColor: !activeCategory && activeSourceIds.size === 0 ? 'color-mix(in srgb, var(--accent-blue) 12%, transparent)' : 'var(--bg-elevated)',
+                color: !activeCategory && activeSourceIds.size === 0 ? 'var(--accent-blue)' : 'var(--text-secondary)',
+              }}
+            >
+              All
+            </button>
+            {CATEGORIES.map(cat => (
               <button
-                key={source.id}
-                onClick={() => toggleSource(source.id)}
+                key={cat.value}
+                onClick={() => toggleCategory(cat.value)}
                 className="text-xs px-2.5 py-1 rounded-full shrink-0 transition-colors border"
                 style={{
-                  borderColor: isActive ? 'var(--accent-blue)' : 'var(--border-subtle)',
-                  backgroundColor: isActive ? 'color-mix(in srgb, var(--accent-blue) 12%, transparent)' : 'var(--bg-elevated)',
-                  color: isActive ? 'var(--accent-blue)' : 'var(--text-secondary)',
+                  borderColor: activeCategory === cat.value ? 'var(--accent-blue)' : 'var(--border-subtle)',
+                  backgroundColor: activeCategory === cat.value ? 'color-mix(in srgb, var(--accent-blue) 12%, transparent)' : 'var(--bg-elevated)',
+                  color: activeCategory === cat.value ? 'var(--accent-blue)' : 'var(--text-secondary)',
                 }}
               >
-                {source.label}
+                {cat.label}
               </button>
-            )
-          })}
+            ))}
+          </div>
+
+          {/* Source chips */}
+          <div className="flex gap-1.5" style={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+            {sources.map(source => {
+              const isActive = activeSourceIds.has(source.id)
+              return (
+                <button
+                  key={source.id}
+                  onClick={() => toggleSource(source.id)}
+                  className="text-xs px-2.5 py-1 rounded-full shrink-0 transition-colors border"
+                  style={{
+                    borderColor: isActive ? 'var(--accent-blue)' : 'var(--border-subtle)',
+                    backgroundColor: isActive ? 'color-mix(in srgb, var(--accent-blue) 12%, transparent)' : 'var(--bg-elevated)',
+                    color: isActive ? 'var(--accent-blue)' : 'var(--text-secondary)',
+                  }}
+                >
+                  {source.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
       )}
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getFeedSources, insertFeedSource } from '@/lib/db'
-import type { SourceAgency, FeedSourceCategory } from '@/lib/types'
+import type { SourceAgency, FeedSourceCategory, FeedSourceType } from '@/lib/types'
 
 export async function GET() {
   return NextResponse.json(getFeedSources())
@@ -8,7 +8,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { label, url, source_agency, category } = body
+  const { label, url, source_agency, category, feed_type } = body
 
   if (!label || !url || !source_agency || !category) {
     return NextResponse.json(
@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
     url,
     source_agency: source_agency as SourceAgency,
     category: category as FeedSourceCategory,
+    feed_type: (feed_type ?? 'html') as FeedSourceType,
   })
   return NextResponse.json({ id }, { status: 201 })
 }
