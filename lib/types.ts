@@ -1,94 +1,126 @@
 /** Regulatory source agencies */
-export type SourceAgency = 'CRA' | 'CIRO' | 'OSC' | 'CSA' | 'FINTRAC' | 'OSFI' | 'FCAC' | 'Dept of Finance' | 'Payments Canada'
+export type SourceAgency =
+  | "CRA"
+  | "CIRO"
+  | "OSC"
+  | "CSA"
+  | "FINTRAC"
+  | "OSFI"
+  | "FCAC"
+  | "Dept-of-Finance"
+  | "Payments-Canada";
 
-/** Severity level of a regulatory change */
-export type Severity = 'low' | 'medium' | 'high' | 'critical'
+/** Severity level of a regulatory finding */
+export type Severity = "low" | "medium" | "high" | "critical";
 
-/** Review workflow status */
-export type ReviewStatus = 'new' | 'reviewed' | 'action_planned' | 'escalated' | 'resolved'
-
-/** Category of regulatory change */
-export type ChangeCategory = 'new_rule' | 'amendment' | 'guidance' | 'enforcement' | 'consultation'
+/** Category of regulatory finding */
+export type FindingCategory =
+  | "new_rule"
+  | "amendment"
+  | "guidance"
+  | "enforcement"
+  | "consultation"
+  | "deadline"
+  | "threshold_change";
 
 /** Wealthsimple product keys */
 export type ProductKey =
-  | 'RRSP'
-  | 'TFSA'
-  | 'FHSA'
-  | 'TRADING'
-  | 'CRYPTO'
-  | 'MANAGED_INVESTING'
-  | 'AML_KYC'
-  | 'TAX_FILING'
-  | 'CREDIT_CARD'
-  | 'CHEQUING'
+  | "RRSP"
+  | "TFSA"
+  | "FHSA"
+  | "TRADING"
+  | "CRYPTO"
+  | "MANAGED_INVESTING"
+  | "AML_KYC"
+  | "TAX_FILING"
+  | "CREDIT_CARD"
+  | "CHEQUING";
 
 /** A regulatory document ingested into the system */
 export interface RegulatoryDocument {
-  id: string
-  title: string
-  source_agency: SourceAgency
-  source_url?: string
-  publish_date?: string
-  raw_text: string
-  ingested_at: string
-  processing_status: 'pending' | 'processed' | 'failed'
+  id: string;
+  title: string;
+  source_agency: SourceAgency;
+  source_url?: string;
+  publish_date?: string;
+  raw_text: string;
+  content_type: "text" | "pdf";
+  ingested_at: string;
+  processing_status: "pending" | "processed" | "failed";
 }
 
-/** A discrete regulatory change extracted from a document */
-export interface RegulatoryChange {
-  id: string
-  document_id: string
-  change_summary: string
-  effective_date?: string
-  severity: Severity
-  severity_rationale?: string
-  affected_products: ProductKey[]
-  recommended_actions: string[]
-  key_quotes: string[]
-  confidence_score?: number
-  review_status: ReviewStatus
-  reviewed_by?: string
-  review_notes?: string
-  created_at: string
-  updated_at: string
+/** A discrete regulatory finding extracted from a document */
+export interface RegulatoryFinding {
+  id: string;
+  document_id: string;
+  finding_summary: string;
+  effective_date?: string;
+  severity: Severity;
+  severity_rationale?: string;
+  affected_products: ProductKey[];
+  recommended_actions: string[];
+  key_quotes: string[];
+  confidence_score?: number;
+  created_at: string;
+  updated_at: string;
 }
 
 /** Result returned by the extraction AI step */
 export interface ExtractionResult {
-  changes: ExtractedChange[]
-  document_summary: string
+  findings: ExtractedFinding[];
 }
 
-/** A single change as extracted by the AI (pre-assessment) */
-export interface ExtractedChange {
-  change_summary: string
-  effective_date?: string
-  key_quotes: string[]
-  category?: ChangeCategory
+/** A single finding as extracted by the AI (pre-assessment) */
+export interface ExtractedFinding {
+  finding_summary: string;
+  effective_date?: string | null;
+  key_quotes: string[];
+  category?: FindingCategory | null;
+  regulatory_references: string[];
+  affected_keywords: string[];
 }
 
 /** Result returned by the assessment AI step */
 export interface AssessmentResult {
-  affected_products: ProductKey[]
-  severity: Severity
-  severity_rationale: string
-  recommended_actions: string[]
-  confidence_score: number
+  affected_products: ProductKey[];
+  severity: Severity;
+  severity_rationale: string;
+  recommended_actions: string[];
+  confidence_score: number;
 }
 
 /** Aggregate statistics for the dashboard */
 export interface DashboardStats {
-  total_documents: number
-  total_changes: number
-  by_severity: Record<Severity, number>
-  by_status: Record<ReviewStatus, number>
+  total_documents: number;
+  total_findings: number;
+  by_severity: Record<Severity, number>;
 }
 
-/** Filter options for querying regulatory changes */
-export interface ChangeFilters {
-  severity?: Severity[]
-  status?: ReviewStatus[]
-  source_agency?: SourceAgency
-  product?: ProductKey
+/** Filter options for querying regulatory findings */
+export interface FindingFilters {
+  severity?: Severity[];
+  source_agency?: SourceAgency;
+  product?: ProductKey;
+}
+
+/** A configured regulatory agency publication page to monitor */
+export interface FeedSource {
+  id: string
+  label: string
+  url: string
+  source_agency: SourceAgency
+  last_checked_at?: string
+  created_at: string
+}
+
+/** A discovered link from a feed source */
+export interface FeedItem {
+  id: string
+  source_id: string
+  item_url: string
+  title?: string
+  detected_at: string
+  published_at?: string | null
+  status: 'new' | 'dismissed' | 'ingested'
+  document_id?: string
 }

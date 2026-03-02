@@ -1,0 +1,28 @@
+CIRO releases Annual Compliance Report 2026 to help dealers meet regulatory requirements and advance investor protection
+Report sheds light on common compliance challenges and how dealers can address them
+
+February 17, 2026 (Toronto, Ontario) - The Canadian Investment Regulatory Organization (CIRO) published its Annual Compliance Report, providing insight for dealers into emerging compliance challenges and how they can address them. CIRO’s Annual Compliance Report helps dealers focus their supervision and risk-management efforts to comply with CIRO’s regulatory requirements effectively while reflecting the realities of their individual business models.
+
+“CIRO’s Compliance Report helps dealers understand industry-wide trends in compliance matters so they can adapt their policies and procedures to meet emerging challenges and better protect investors from potential harm,” said Andrew J. Kriegler, President and CEO of CIRO. “As dealers continue to adopt innovative technologies and evolve their operations to meet the changing needs of Canadian investors, mitigating new risks is crucial to maintain the integrity and health of Canadian capital markets.”
+
+Managing the risks of emerging technologies while supporting innovation
+How dealers can effectively innovate while managing the risks of emerging technologies to protect investors was once again a key theme of this year’s report. Highlights include:
+
+Cybersecurity remains a key business risk. As we shared in August 2025, CIRO experienced firsthand a sophisticated cyber attack, which has become increasingly common. While the report warns of an increase in cybersecurity incident reports involving third-party service providers that have affected dealers, it also notes that substantial progress has been made in the remediation of cybersecurity-related findings. As personnel are the most valuable asset in managing cybersecurity risk, the report emphasizes the need for continuous training for all staff to enhance awareness and reduce vulnerability to attacks.
+Crypto Asset Trading Platforms (CTPs) continue to be onboarded into CIRO membership. On February 3, 2026, CIRO published Guidance Note 26-0033: Notice on CIRO's Digital Assets Custody Framework to support a framework for standardized crypto custody arrangements and segregation requirements. CIRO is also helping CTPs respond to evolving market and technology needs through InnovateSafe, a regulatory sandbox initiative that allows CIRO-regulated firms to safely test innovative products and technologies in a controlled environment with CIRO oversight.
+Artificial intelligence (AI) is becoming increasingly important in enabling dealers to manage complexity, improve efficiency, and strengthen decision-making. The report notes that CIRO will be inquiring about the use of AI in dealers’ operations and reviewing the operational controls implemented to ensure AI is working as designed as part of its Financial and Operations compliance examinations.
+Helping dealers maintain strong compliance frameworks
+The report encourages dealers to review the findings from the recent CSA-CIRO Client Focused Reforms (CFR) Phase 2 Sweep, which evaluated the implementation of CFR enhancements associated with Know Your Client (KYC) information collection, Product Due Diligence (PDD), Know Your Product (KYP) and Suitability Assessments. The most common deficiency identified for CIRO dealers was a failure to have policies and procedures that are tailored to the firm’s business model and are detailed and actionable.
+
+In addition, the report summarizes several notable observations made by CIRO Compliance teams during their recent examinations that may impact the effectiveness of dealers’ compliance systems. Common issues identified include:
+
+gaps in supervisory practices, including inadequate review of outside activities and insufficient identification of client communications through non-approved channels.
+gaps in how dealers identify, assess and disclose conflicts of interest.
+concerns about the adequacy of daily and monthly trade supervision systems.
+deficiencies in controls over referral arrangements.
+The report encourages dealers to review their policies, procedures and practices considering these findings to maintain strong compliance frameworks.
+
+Ensuring compliance with registration and proficiency requirements
+The report also provides an update on the delegation of registration functions to CIRO, noting that CIRO now handles the registration function for the majority of individuals who work in Canada’s securities industry. Dealers are reminded to submit complete registration information to CIRO in order to ensure timely decisions. Investment dealers should also ensure their approved persons are aware of CIRO’s new assessment-centric proficiency model and implement policies and procedures to ensure timely completion and reporting of training requirements.
+
+Read the full Annual Compliance Report 2026.

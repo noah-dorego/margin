@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import { DM_Sans, JetBrains_Mono } from 'next/font/google'
+import Link from 'next/link'
+import { Toaster } from 'sonner'
+import { Sidebar } from '@/components/Sidebar'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -16,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'RegScope',
-  description: 'AI-native regulatory change impact analyzer',
+  description: 'AI-native regulatory finding impact analyzer',
 }
 
 export default function RootLayout({
@@ -26,17 +29,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
-      <body className="antialiased">
+      <body className="antialiased flex flex-col h-screen">
         <header
-          className="flex h-12 items-center justify-between border-b px-6"
+          className="flex h-12 flex-shrink-0 items-center justify-between border-b px-6"
           style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}
         >
-          <span className="text-sm font-semibold tracking-wide" style={{ fontFamily: 'var(--font-dm-sans)' }}>
-            RegScope
-          </span>
-          <div>{/* placeholder for upload button */}</div>
+          <span className="text-sm font-semibold tracking-wide">RegScope</span>
+          <Link
+            href="/documents/upload"
+            className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors"
+            style={{ backgroundColor: 'var(--accent-blue)', color: '#fff' }}
+          >
+            + Upload
+          </Link>
         </header>
-        <main className="flex-1">{children}</main>
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          <main className="flex-1 overflow-y-auto">{children}</main>
+        </div>
+        <Toaster theme="dark" position="bottom-right" />
       </body>
     </html>
   )

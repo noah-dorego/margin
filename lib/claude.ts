@@ -3,13 +3,21 @@ import Anthropic from '@anthropic-ai/sdk'
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function callClaude(
-  prompt: string,
-  model = 'claude-sonnet-4-20250514'
+  userMessage: string,
+  options?: { system?: string; model?: string; pdfData?: string }
 ): Promise<string> {
+  const content = options?.pdfData
+    ? [
+        { type: 'document' as const, source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: options.pdfData } },
+        { type: 'text' as const, text: userMessage },
+      ]
+    : userMessage
+
   const message = await client.messages.create({
-    model,
+    model: options?.model ?? 'claude-sonnet-4-20250514',
     max_tokens: 4096,
-    messages: [{ role: 'user', content: prompt }],
+    ...(options?.system ? { system: options.system } : {}),
+    messages: [{ role: 'user', content }],
   })
 
   const block = message.content[0]

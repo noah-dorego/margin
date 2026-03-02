@@ -9,7 +9,7 @@ export interface ProductTaxonomyEntry {
 export const PRODUCT_TAXONOMY: Record<ProductKey, ProductTaxonomyEntry> = {
   RRSP: {
     label: 'RRSP',
-    regulatory_domains: ['CRA', 'Dept of Finance'],
+    regulatory_domains: ['CRA', 'Dept-of-Finance'],
     keywords: [
       'RRSP',
       'registered retirement savings',
@@ -24,7 +24,7 @@ export const PRODUCT_TAXONOMY: Record<ProductKey, ProductTaxonomyEntry> = {
   },
   TFSA: {
     label: 'TFSA',
-    regulatory_domains: ['CRA', 'Dept of Finance'],
+    regulatory_domains: ['CRA', 'Dept-of-Finance'],
     keywords: [
       'TFSA',
       'tax-free savings account',
@@ -35,7 +35,7 @@ export const PRODUCT_TAXONOMY: Record<ProductKey, ProductTaxonomyEntry> = {
   },
   FHSA: {
     label: 'FHSA',
-    regulatory_domains: ['CRA', 'Dept of Finance'],
+    regulatory_domains: ['CRA', 'Dept-of-Finance'],
     keywords: [
       'FHSA',
       'first home savings account',
@@ -125,7 +125,7 @@ export const PRODUCT_TAXONOMY: Record<ProductKey, ProductTaxonomyEntry> = {
   },
   CREDIT_CARD: {
     label: 'Credit Card',
-    regulatory_domains: ['FCAC', 'Dept of Finance'],
+    regulatory_domains: ['FCAC', 'Dept-of-Finance'],
     keywords: [
       'credit card',
       'interest rate',
@@ -139,7 +139,7 @@ export const PRODUCT_TAXONOMY: Record<ProductKey, ProductTaxonomyEntry> = {
   },
   CHEQUING: {
     label: 'Chequing',
-    regulatory_domains: ['FCAC', 'Payments Canada', 'Dept of Finance'],
+    regulatory_domains: ['FCAC', 'Payments-Canada', 'Dept-of-Finance'],
     keywords: [
       'chequing account',
       'NSF fee',

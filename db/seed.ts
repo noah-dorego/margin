@@ -12,7 +12,7 @@
 
 import fs from 'fs'
 import path from 'path'
-import { insertDocument } from '../lib/db'
+import { getDb, insertDocument } from '../lib/db'
 import type { SourceAgency } from '../lib/types'
 
 const SEED_DIR = path.join(process.cwd(), 'seed-documents')
@@ -37,7 +37,9 @@ async function seed() {
     return
   }
 
+  const db = getDb()
   let inserted = 0
+  let skipped = 0
   let failed = 0
 
   for (const filename of files) {
@@ -54,11 +56,21 @@ async function seed() {
     const titleSlug = nameWithoutExt.slice(underscoreIdx + 1)
     const title = kebabToTitle(titleSlug)
 
+    const existing = db
+      .prepare('SELECT id FROM regulatory_documents WHERE title = ? AND source_agency = ?')
+      .get(title, sourceAgency) as { id: string } | undefined
+
+    if (existing) {
+      console.log(`  DUPE  ${filename} — already exists (id=${existing.id}), skipping`)
+      skipped++
+      continue
+    }
+
     const filePath = path.join(SEED_DIR, filename)
     const raw_text = fs.readFileSync(filePath, 'utf-8')
 
     try {
-      const id = insertDocument({ title, source_agency: sourceAgency, raw_text })
+      const id = insertDocument({ title, source_agency: sourceAgency, raw_text, content_type: 'text' })
       console.log(`  OK    ${filename} → id=${id} title="${title}" agency=${sourceAgency}`)
       inserted++
     } catch (err) {
@@ -67,7 +79,7 @@ async function seed() {
     }
   }
 
-  console.log(`\nDone. Inserted: ${inserted}, Failed: ${failed}`)
+  console.log(`\nDone. Inserted: ${inserted}, Skipped: ${skipped}, Failed: ${failed}`)
 }
 
 seed().catch((err) => {

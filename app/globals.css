@@ -68,13 +68,6 @@
   --severity-medium: #ca8a04;
   --severity-low: #16a34a;
 
-  /* Review status colors */
-  --status-new: #4f7cf6;
-  --status-reviewed: #8b90a0;
-  --status-action-planned: #ca8a04;
-  --status-escalated: #dc2626;
-  --status-resolved: #16a34a;
-
   /* shadcn token overrides — dark theme as default */
   --background: #0f1117;
   --foreground: #e8eaf0;

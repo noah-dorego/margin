@@ -10,10 +10,10 @@ CREATE TABLE IF NOT EXISTS regulatory_documents (
     CHECK(processing_status IN ('pending', 'processed', 'failed'))
 );
 
-CREATE TABLE IF NOT EXISTS regulatory_changes (
+CREATE TABLE IF NOT EXISTS regulatory_findings (
   id TEXT PRIMARY KEY,
   document_id TEXT NOT NULL REFERENCES regulatory_documents(id),
-  change_summary TEXT NOT NULL,
+  finding_summary TEXT NOT NULL,
   effective_date TEXT,
   severity TEXT NOT NULL CHECK(severity IN ('low', 'medium', 'high', 'critical')),
   severity_rationale TEXT,
@@ -21,10 +21,26 @@ CREATE TABLE IF NOT EXISTS regulatory_changes (
   recommended_actions TEXT NOT NULL DEFAULT '[]', -- JSON array of strings
   key_quotes TEXT NOT NULL DEFAULT '[]',          -- JSON array of strings
   confidence_score REAL,
-  review_status TEXT NOT NULL DEFAULT 'new'
-    CHECK(review_status IN ('new', 'reviewed', 'action_planned', 'escalated', 'resolved')),
-  reviewed_by TEXT,
-  review_notes TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS feed_sources (
+  id             TEXT PRIMARY KEY,
+  label          TEXT NOT NULL,
+  url            TEXT NOT NULL UNIQUE,
+  source_agency  TEXT NOT NULL,
+  last_checked_at TEXT,
+  created_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS feed_items (
+  id          TEXT PRIMARY KEY,
+  source_id   TEXT NOT NULL REFERENCES feed_sources(id) ON DELETE CASCADE,
+  item_url    TEXT NOT NULL UNIQUE,
+  title       TEXT,
+  detected_at TEXT NOT NULL DEFAULT (datetime('now')),
+  status      TEXT NOT NULL DEFAULT 'new'
+              CHECK(status IN ('new', 'dismissed', 'ingested')),
+  document_id TEXT REFERENCES regulatory_documents(id)
 );

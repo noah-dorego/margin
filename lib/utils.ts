@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import type { Severity, ReviewStatus } from './types'
+import type { Severity } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -22,12 +22,4 @@ export const severityColor: Record<Severity, string> = {
   high: 'bg-[var(--severity-high)] text-white',
   medium: 'bg-[var(--severity-medium)] text-white',
   low: 'bg-[var(--severity-low)] text-white',
-}
-
-export const statusColor: Record<ReviewStatus, string> = {
-  new: 'bg-[var(--status-new)] text-white',
-  reviewed: 'bg-[var(--status-reviewed)] text-white',
-  action_planned: 'bg-[var(--status-action-planned)] text-white',
-  escalated: 'bg-[var(--status-escalated)] text-white',
-  resolved: 'bg-[var(--status-resolved)] text-white',
 }

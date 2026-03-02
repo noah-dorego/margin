@@ -1,47 +1,59 @@
-import type { ExtractedChange } from './types'
-import { PRODUCT_TAXONOMY } from './taxonomy'
+import type { ExtractedFinding } from "./types";
+import { PRODUCT_TAXONOMY } from "./taxonomy";
 
-export function buildExtractionPrompt(documentText: string, sourceAgency: string): string {
-  return `<task>
-You are a regulatory compliance analyst. Extract all discrete regulatory changes from the provided document.
-Return a JSON object matching the ExtractionResult schema exactly.
-</task>
+export function buildExtractionSystemPrompt(
+  sourceAgency: string,
+  documentText?: string,
+  publishDate?: string,
+): string {
+  const publishDateTag = publishDate
+    ? `\n  <publish_date>${publishDate}</publish_date>`
+    : "";
+
+  const documentBlock = documentText
+    ? `\n<document>\n  <source_agency>${sourceAgency}</source_agency>${publishDateTag}\n  <text>\n${documentText}\n  </text>\n</document>`
+    : `\n<document>\n  <source_agency>${sourceAgency}</source_agency>${publishDateTag}\n</document>`;
+
+  return `You are a regulatory compliance analyst specializing in Canadian financial regulation. Your task is to extract all discrete regulatory findings from the provided regulatory document.
+${documentBlock}
 
 <rules>
-- Extract each discrete change as a separate item — do not combine multiple changes into one
+- Extract each discrete finding as a separate item — do not combine multiple findings into one
 - Use precise dates exactly as stated in the document; use null if not specified
-- Include verbatim key quotes from the document that support each change
+- If the document says "effective immediately" and a publish_date is provided, use that date
+- Include verbatim key quotes from the document that support each finding
+- Include regulatory references (e.g., section numbers, rule citations, bulletin IDs) mentioned in the document for each finding
+- Include keywords from the finding that would help identify which product lines are affected
 - Do not speculate or infer information not present in the document
 - Your response must be valid JSON only — no prose, no markdown fences
 </rules>
 
-<source_agency>${sourceAgency}</source_agency>
-
-<document>
-${documentText}
-</document>
-
 <output_format>
 {
-  "changes": [
+  "findings": [
     {
-      "change_summary": "string — concise description of the regulatory change",
+      "finding_summary": "string — concise description of the regulatory finding",
       "effective_date": "string | null — ISO date (YYYY-MM-DD) or null",
       "key_quotes": ["string — verbatim quote from document"],
-      "category": "new_rule | amendment | guidance | enforcement | consultation | null"
+      "category": "new_rule | amendment | guidance | enforcement | consultation | deadline | threshold_change | null",
+      "regulatory_references": ["string — section number, rule citation, bulletin ID, or other reference"],
+      "affected_keywords": ["string — keyword that helps identify affected product lines"]
     }
-  ],
-  "document_summary": "string — 2-3 sentence summary of the document as a whole"
+  ]
 }
-</output_format>`
+</output_format>`;
+}
+
+export function buildExtractionUserMessage(): string {
+  return "Extract all regulatory findings from this document.";
 }
 
 export function buildAssessmentPrompt(
-  change: ExtractedChange,
-  taxonomy: typeof PRODUCT_TAXONOMY
+  finding: ExtractedFinding,
+  taxonomy: typeof PRODUCT_TAXONOMY,
 ): string {
   return `<task>
-You are a regulatory impact analyst at a Canadian fintech company. Assess the impact of the provided regulatory change on our product lines.
+You are a regulatory impact analyst at a Canadian fintech company. Assess the impact of the provided regulatory finding on our product lines.
 Return a JSON object matching the AssessmentResult schema exactly.
 </task>
 
@@ -58,9 +70,9 @@ Return a JSON object matching the AssessmentResult schema exactly.
 ${JSON.stringify(taxonomy, null, 2)}
 </taxonomy>
 
-<change>
-${JSON.stringify(change, null, 2)}
-</change>
+<finding>
+${JSON.stringify(finding, null, 2)}
+</finding>
 
 <output_format>
 {
@@ -70,5 +82,5 @@ ${JSON.stringify(change, null, 2)}
   "recommended_actions": ["string — concrete action item for compliance team"],
   "confidence_score": 0.0
 }
-</output_format>`
+</output_format>`;
 }

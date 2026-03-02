@@ -1,0 +1,28 @@
+Rule amendments support expanded membership and access to critical national infrastructure
+February 12, 2026
+Updates harmonize ACSS rules with latest amendments to the Canadian Payments Act.
+
+A series of amendments to the Automated Clearing Settlement System (ACSS) rules are now in effect. These changes, which became effective on February 9, 2026, are designed to align with recent legislative updates to the Canadian Payments Act (CP Act) and refine and enhance operations and processing procedures.
+
+Expanded access and risk-based membership
+Driving these rule changes was the need to reflect expanded membership eligibility under the CP Act, which now includes registered payment service providers, clearing houses and credit union locals that are members of a central.
+
+To support this new membership environment, ACSS Rule D1 has been amended to update the affiliate restrictions to a risk-based, case-by-case approach. The previous restrictions were identified as potential barriers for credit union locals. The amendment focuses on ensuring that an applicant’s affiliation does not prevent them from meeting financial requirements, such as paying clearing balances, fulfilling collateral pledges or making default contributions.
+
+Refined return procedures
+The updated rules also provide clarity on the handling of paper items and return reasons:
+
+Return item slips: Rules A4 and B10 now state that a Return Item Slip may only be used to redirect an Item.
+Amount-encoded items: Rules A4, A10, B10, and G3 have been clarified to ensure the return reason “Item Incorrectly Amount-Encoded” is used correctly. The amendments clarify that the return reason should only be used when the encoded amount on a payment item, like a cheque, is wrong, but the amounts in both words and figures on the Item match each other.
+Efficiency improvements and retirement of legacy components
+The rule amendments officially retired several legacy components that were no longer used by financial institutions. These include references to ACSS Stream “Z” (Computer Rejects), which direct clearers ceased delivering in April 2025. As a result, references have been removed from Rules A1, B2, and K1.
+
+Also, Appendix II of Rule K1, which listed Point-of-Entry Offices, has been removed. Financial institutions confirmed that the use of a Point-of-Entry stamp is no longer mandatory and therefore the list could be removed.
+
+Section 17 of ACSS Rule L1, which governs the "Interest on Default Contributions and Additional Contributions" has also been amended. This update aligns the calculation of interest on default contributions with recent changes made to ACSS Rule J10.
+
+Rules, standards, technical specifications and procedures (TSPs) and by-laws are reviewed and, if necessary, amended through processes that involve Payments Canada members, the Bank of Canada, the Payments Canada Board of Directors, the Department of Finance and the Department of Justice, as required.
+
+Payments Canada’s legal framework is made up of by-laws, rules, standards, technical specifications and procedure documents that support and ensure the safety, soundness, security and operational resilience of our payment systems. By-laws, rules and standards lay out the roles, responsibilities and obligations of our member financial institutions and payment services providers on the appropriate handling of payment items exchanged, cleared and settled via our payment systems.
+
+For full versions of amendments and rules and to learn more about Payments Canada’s rules, by-laws and the amendment or development process, please visit our Rules and documentation webpage.
