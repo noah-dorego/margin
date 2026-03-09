@@ -18,6 +18,11 @@ import type {
 
 let db: Database.Database | null = null;
 
+/** For tests only — injects an in-memory DB so helpers skip file I/O and seeding. */
+export function _setDbForTesting(testDb: Database.Database): void {
+  db = testDb;
+}
+
 export function getDb(): Database.Database {
   if (db) return db;
 
